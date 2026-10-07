@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThreatItem, CampaignCluster } from '../types/threat';
+import { ThreatItem, CampaignCluster } from '../types/threat.ts';
 import { 
   ShieldAlert, 
   AlertTriangle, 

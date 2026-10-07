@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BenchmarkMetrics } from '../types/threat';
+import { BenchmarkMetrics } from '../types/threat.ts';
 import { 
   BarChart3, 
   Sliders, 

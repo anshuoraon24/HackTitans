@@ -1,4 +1,4 @@
-import { ThreatItem, CampaignCluster, GraphNode, GraphEdge, BenchmarkMetrics } from '../types/threat';
+import { ThreatItem, CampaignCluster, GraphNode, GraphEdge, BenchmarkMetrics } from '../types/threat.ts';
 
 export const INITIAL_THREATS: ThreatItem[] = [
   {

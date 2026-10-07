@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ThreatItem, TakedownPackage } from '../types/threat';
+import { ThreatItem, TakedownPackage } from '../types/threat.ts';
 import { 
   FileText, 
   Copy, 

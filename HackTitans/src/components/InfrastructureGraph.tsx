@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GraphNode, GraphEdge, CampaignCluster, ThreatSeverity } from '../types/threat';
+import { GraphNode, GraphEdge, CampaignCluster, ThreatSeverity } from '../types/threat.ts';
 import { 
   Network, 
   Globe, 

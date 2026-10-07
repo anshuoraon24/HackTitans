@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Navbar, NavTab } from './components/Navbar';
-import { QuickScamChecker } from './components/QuickScamChecker';
-import { OverviewDashboard } from './components/OverviewDashboard';
-import { VisualDiffComparator } from './components/VisualDiffComparator';
-import { InfrastructureGraph } from './components/InfrastructureGraph';
-import { CrawlerFeed } from './components/CrawlerFeed';
-import { ScanWorkbench } from './components/ScanWorkbench';
-import { PrecisionRecallBenchmark } from './components/PrecisionRecallBenchmark';
-import { TakedownGeneratorModal } from './components/TakedownGeneratorModal';
-import { ThreatItem, CampaignCluster } from './types/threat';
+import { Navbar, NavTab } from './components/Navbar.tsx';
+import { QuickScamChecker } from './components/QuickScamChecker.tsx';
+import { ScamSpotterQuiz } from './components/ScamSpotterQuiz.tsx';
+import { AttackFlowSimulator } from './components/AttackFlowSimulator.tsx';
+import { IndiaThreatMap } from './components/IndiaThreatMap.tsx';
+import { OverviewDashboard } from './components/OverviewDashboard.tsx';
+import { VisualDiffComparator } from './components/VisualDiffComparator.tsx';
+import { InfrastructureGraph } from './components/InfrastructureGraph.tsx';
+import { CrawlerFeed } from './components/CrawlerFeed.tsx';
+import { ScanWorkbench } from './components/ScanWorkbench.tsx';
+import { PrecisionRecallBenchmark } from './components/PrecisionRecallBenchmark.tsx';
+import { TakedownGeneratorModal } from './components/TakedownGeneratorModal.tsx';
+import { ThreatItem, CampaignCluster } from './types/threat.ts';
 import { 
   INITIAL_THREATS, 
   INITIAL_CAMPAIGNS, 
   INITIAL_GRAPH_NODES, 
   INITIAL_GRAPH_EDGES, 
   BENCHMARK_METRICS_DATA 
-} from './data/mockThreats';
-import { ShieldCheck, Sparkles, Terminal, Shield } from 'lucide-react';
+} from './data/mockThreats.ts';
+import { ShieldCheck, Sparkles, Terminal, Trophy, Zap, Globe } from 'lucide-react';
+import { playSound } from './utils/audio.ts';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('quick');
@@ -33,20 +37,22 @@ export default function App() {
 
   const showNotification = (msg: string) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 4000);
+    window.setTimeout(() => setNotification(null), 4000);
   };
 
-  const handleSelectThreatForSandbox = (threat: ThreatItem) => {
+  const handleSelectThreatForSandbox = (threat?: ThreatItem) => {
+    if (!threat) return;
     setSelectedThreat(threat);
     setActiveTab('comparator');
   };
 
-  const handleOpenTakedownModal = (threat: any) => {
-    const fullThreat = threats.find(t => t.domain === threat.domain) || {
+  const handleOpenTakedownModal = (threat?: Partial<ThreatItem> & { domain?: string; targetBrand?: string; scammerVpa?: string }) => {
+    const candidate = threat ?? {};
+    const fullThreat = threats.find(t => t.domain === candidate.domain) || {
       ...INITIAL_THREATS[0],
-      domain: threat.domain || 'phonepe-reward-scratch.top',
-      targetBrand: threat.targetBrand || 'PhonePe',
-      scammerVpa: threat.scammerVpa || 'cashback.rewards99@okaxis'
+      domain: candidate.domain || 'phonepe-reward-scratch.top',
+      targetBrand: candidate.targetBrand || 'PhonePe',
+      scammerVpa: candidate.scammerVpa || 'cashback.rewards99@okaxis'
     };
     setThreatForTakedown(fullThreat);
     setIsTakedownModalOpen(true);
@@ -64,6 +70,7 @@ export default function App() {
       }
       return t;
     }));
+    playSound('chime');
     showNotification(`Formal takedown notice successfully dispatched for ${threatForTakedown.domain}`);
   };
 
@@ -112,7 +119,10 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenQuickScan={() => setActiveTab('quick')}
+        onOpenQuickScan={() => {
+          setActiveTab('quick');
+          playSound('scan');
+        }}
       />
 
       {/* Mode Switcher Banner (Friendly for beginners vs Expert SOC) */}
@@ -122,9 +132,12 @@ export default function App() {
             <span className="text-slate-400">View Mode:</span>
             <div className="flex items-center gap-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800">
               <button
-                onClick={() => setActiveTab('quick')}
+                onClick={() => {
+                  setActiveTab('quick');
+                  playSound('click');
+                }}
                 className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  activeTab === 'quick'
+                  activeTab === 'quick' || activeTab === 'quiz' || activeTab === 'simulator' || activeTab === 'map'
                     ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
@@ -135,9 +148,12 @@ export default function App() {
                 </span>
               </button>
               <button
-                onClick={() => setActiveTab(activeTab === 'quick' ? 'overview' : activeTab)}
+                onClick={() => {
+                  setActiveTab(activeTab === 'quick' || activeTab === 'quiz' || activeTab === 'simulator' || activeTab === 'map' ? 'overview' : activeTab);
+                  playSound('click');
+                }}
                 className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  activeTab !== 'quick'
+                  activeTab !== 'quick' && activeTab !== 'quiz' && activeTab !== 'simulator' && activeTab !== 'map'
                     ? 'bg-slate-800 text-indigo-300 shadow-sm border border-indigo-500/30'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
@@ -150,12 +166,12 @@ export default function App() {
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-3 text-slate-400 font-mono text-[11px]">
-            <span className="flex items-center gap-1.5 text-emerald-400">
+          <div className="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               Python 3.10 Engine Connected
             </span>
-            <span>·</span>
+            <span className="hidden sm:inline">·</span>
             <span>NPCI / CERT-In Framework</span>
           </div>
         </div>
@@ -187,6 +203,20 @@ export default function App() {
                   setSelectedThreat(match);
                   setActiveTab('comparator');
                 }}
+              />
+            )}
+
+            {activeTab === 'quiz' && (
+              <ScamSpotterQuiz />
+            )}
+
+            {activeTab === 'simulator' && (
+              <AttackFlowSimulator />
+            )}
+
+            {activeTab === 'map' && (
+              <IndiaThreatMap
+                onSelectCampaign={handleSelectCampaignForGraph}
               />
             )}
 

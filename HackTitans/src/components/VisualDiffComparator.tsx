@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThreatItem } from '../types/threat';
+import { ThreatItem } from '../types/threat.ts';
 import { 
   ShieldCheck, 
   AlertOctagon, 
