@@ -1,0 +1,7 @@
+{
+  "name": "UPI Shield - Fake Payment Page & App Detection Platform",
+  "description": "Enterprise-grade detection and infrastructure mapping engine for fake UPI payment pages, phishing clones, and rogue banking APKs with automated takedown reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
