@@ -25,7 +25,8 @@ async function startServer() {
       const args = [scriptPath, action];
       if (extraArg) args.push(extraArg);
 
-      const pyProcess = spawn('python3', args);
+      const pythonBinary = process.env.PYTHON || process.env.PYTHON3 || (process.platform === 'win32' ? 'python' : 'python3');
+      const pyProcess = spawn(pythonBinary, args);
       let stdout = '';
       let stderr = '';
 
